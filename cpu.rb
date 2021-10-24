@@ -26,32 +26,33 @@ $memory = nil
 def reset
   $regfile = Regfile.new
   # 16kb at 0x8000_0000
-  $memory = ('\x00'*0x4000).b
+  $memory = "\x00"*0x4000
 end
 
 # write segment ?
 def ws(addr, dat)
-  puts "0x#{addr.to_i.to_s(16)} #{dat.length}"
-  addr -= 0x8000_0000 
-  assert addr >= 0 && addr < $memory.length
-  $memory = $memory[0..addr] + dat + $memory[(addr+dat.length)..-1]
+  puts "#{addr} #{dat.size}"
+  addr -= 0x80000000 
+  assert addr >= 0 && addr < $memory.size
+  $memory = $memory[0, addr] + dat + $memory[(addr+dat.size)..-1]
 end
 
 # main
-Dir.mkdir('test-cache') unless Dir.exist?('test-cache')
+Dir.mkdir("test-cache") unless Dir.exist?("test-cache")
 Dir.glob("riscv-tests/isa/rv32ui-p-*") do |x|
-  next if x.end_with?('.dump')
-  File.open(x, 'rb') do |f|
+  next if x.end_with?(".dump")
+  next unless x == "riscv-tests/isa/rv32ui-p-and"
+  File.open(x, "rb") do |f|
     reset
     puts "test #{x}"
     e = ELFTools::ELFFile.new(f)
-    e.segments.each { |s| ws(s.header.p_paddr, s.data) }
+    e.segments.each do |s| 
+      ws(s.header.p_paddr, s.data) 
+    end
     File.open("test-cache/%s" % x.split("/")[-1], "wb") do |g|
-      (0..$memory.length).step(4) do |i|
-        #puts binascii.hexlify($memory[i..i+4].reverse)
-      end
-      #g.write($memory[i])
-      #g.write('\n'join([binascii.hexlify($memory[i..i+4][::-1]) for i in range(0, $memory.length, 4)]).b)
+      g.write(
+        (0..$memory.size-1).step(4).map { |i| ($memory[i..i+3].reverse).unpack("H*") }.join("\n")
+      )
     end
   end
 end
