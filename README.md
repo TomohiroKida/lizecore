@@ -20,8 +20,10 @@ $ PATH=$PATH:/usr/local/opt/riscv-gnu-toolchain/bin
 
 ## ruby library
 
+* elftools
+
 ```
-$ gem install elftools
+$ bundle install
 ```
 
 # note on ELF
@@ -31,3 +33,8 @@ ELF is Executable and Linking Format.
 * [ELF header]
 * [Program header table]
 * [Section header table]
+
+```
+$ readelf -l [.elf]
+$ readelf -S [.elf]
+```

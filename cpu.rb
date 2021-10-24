@@ -45,12 +45,13 @@ Dir.glob("riscv-tests/isa/rv32ui-p-*") do |x|
     reset
     puts "test #{x}"
     e = ELFTools::ELFFile.new(f)
-    e.segments.each do |s|
-      ws(s.header.p_paddr, s.data)
+    e.segments.each { |s| ws(s.header.p_paddr, s.data) }
+    File.open("test-cache/%s" % x.split("/")[-1], "wb") do |g|
+      (0..$memory.length).step(4) do |i|
+        #puts binascii.hexlify($memory[i..i+4].reverse)
+      end
+      #g.write($memory[i])
+      #g.write('\n'join([binascii.hexlify($memory[i..i+4][::-1]) for i in range(0, $memory.length, 4)]).b)
     end
-    next
-    #File.open("test-cache/%s" % x.split("/")[-1], "wb") do |g|
-    #  g.write('\n'join([binascii.hexlify(memory[i..i+4][::-1]) for i in range(0, $memory.length, 4)]))
-    #end
   end
 end
