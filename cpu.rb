@@ -6,6 +6,13 @@ class << self
 end
 self.assertions = 0
 
+$regnames = \
+  ["x0", "ra", "sp", "gp", "tp"] +\
+  [*0..2].map { |i| "t#{i}" } + ["s0", "s1"] +\
+  [*0..7].map { |i| "a#{i}" } +\
+  [*2..11].map { |i| "s#{i}" } +\
+  [*3..6].map { |i| "t#{i}" } + ["PC"]
+p $regnames
 
 class Regfile
   attr_accessor :regs
@@ -37,6 +44,17 @@ def ws(addr, dat)
   $memory = $memory[0, addr] + dat + $memory[(addr+dat.size)..-1]
 end
 
+def step
+
+  # *** Fetch ***
+  # *** Decode ***
+  # *** Execute ***
+  # *** Write back ***
+
+  return false
+  return true
+end
+
 # main
 Dir.mkdir("test-cache") unless Dir.exist?("test-cache")
 Dir.glob("riscv-tests/isa/rv32ui-p-*") do |x|
@@ -54,5 +72,10 @@ Dir.glob("riscv-tests/isa/rv32ui-p-*") do |x|
         (0..$memory.size-1).step(4).map { |i| ($memory[i..i+3].reverse).unpack("H*") }.join("\n")
       )
     end
+    inscnt = 0
+    while step() do
+      inscnt += 1
+    end
+    puts "  ran #{inscnt} instructions"
   end
 end
