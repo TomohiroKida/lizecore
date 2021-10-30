@@ -1,3 +1,4 @@
+#!/usr/bin/ruby
 require 'elftools'
 require 'minitest'
 include Minitest::Assertions
